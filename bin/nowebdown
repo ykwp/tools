@@ -1,0 +1,47 @@
+#!/bin/sh
+
+#  [ -f Makefile ] && make clean
+
+file=$1
+target=$2
+
+[ -f "$file" ] || { echo "usage: <file> [targe] " ; exit 1 ; }
+
+
+#clean
+for item in $(lipsum roots $file) ; do
+   [ -e "$item" ] || continue
+      rm -rf $item
+done
+      
+
+lipsum expand -f plain  "*"  $file
+
+
+
+if [ "$target" = "release" ]; then
+   [ -f "Releases.txt" ] || { echo "Err: no Releases.txt file" ; exit 1; }
+   perl ~/dev/utils/nw2pandoc.pl $file | pandoc > doc.html
+
+   dir=$(basename $(pwd))
+   rm -rf $dir
+   mkdir -p $dir
+   cp  -p * $dir/
+
+   rel=$( head -1 Releases.txt | perl -ane 'print "@F[0]"')
+   reldir=${dir}_$rel
+
+   #reldir=${dir}_$(date +"%y-%m-%d")
+
+   rm -rf $reldir
+   mv $dir $reldir
+
+   rm -f ${reldir}.tar.gz
+   tar cfvz  ${reldir}.tar.gz $reldir
+   rm -rf $reldir
+else
+   perl -p -i -e 's/^\s {2,}/\t/g' Makefile
+
+   make run 
+
+fi
