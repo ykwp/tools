@@ -1,0 +1,36 @@
+---
+abstract: 'Different auxiliary tools for everyday work'
+author:
+  - 'Ben auxsend  <ben.cpan@auxsend.org>'
+build_requires:
+  ExtUtils::MakeMaker: 0
+configure_requires:
+  ExtUtils::MakeMaker: 0
+dynamic_config: 0
+generated_by: 'ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.120921'
+license: artistic_2
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: aux
+no_index:
+  directory:
+    - t
+    - inc
+requires:
+  Carp: 1.04
+  Cwd: 3.00
+  File::Basename: 1.00015
+  File::Glob: 1.00015
+  File::Spec: 3.00
+  File::Temp: 0.19
+  Getopt::Long: 2.38
+  Pod::Usage: 1.26
+  Term::ANSIColor: 1.10
+  Test::More: 0.98
+  Text::ParseWords: 3.1
+  perl: 5.008008
+resources:
+  homepage: http://www.auxsend.org/ftp/utils/appaux
+  license: http://www.perlfoundation.org/artistic_license_2_0
+version: 0.01

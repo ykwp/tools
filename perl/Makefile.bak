@@ -1,0 +1,26 @@
+SOURCEDIR = txt
+BUILDDIR = html
+SRCEXT = txt
+TGTEXT = html
+
+SOURCES = $(shell find $(SOURCEDIR)/ -type f -iname '*'.$(SRCEXT))
+TARGETS = $(patsubst $(SOURCEDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.$(TGTEXT)))
+
+
+$(BUILDDIR)/%.$(TGTEXT): $(SOURCEDIR)/%.$(SRCEXT)
+	echo fuck
+	mkdir -p $(BUILDDIR)
+	pandoc -s $< > $@
+
+
+#all: $(TARGETS)
+#	sh ./build.sh
+
+clean:
+	rm -rf html
+
+test:
+	echo %s
+
+$(BUILDDIR):
+	mkdir -p $(BUILDDIR)
