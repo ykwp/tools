@@ -1,0 +1,59 @@
+#!/usr/bin/perl -n 
+
+
+
+#Ast_forms       doc.nw  /^<< Ast_forms >>=$/;"  c       line:16 
+#<< fuck_me >>=	test.nw	/^<< fuck_me >>=$/;"	c	line:1
+
+BEGIN{ 
+   $file = $ARGV[0]; 
+   -f $file || exit;
+   chomp $file; 
+   %chapts;
+   @rest;
+   @navs;
+   $header = '!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+';
+} ;
+
+END {
+
+   foreach (sort (keys %chapts )){
+      foreach ( @{ $chapts{$_}} ){
+         print $_ ;
+      }
+   }
+   foreach (@rest){
+      print $_;
+   }
+   open ($fh, ">", "tags");
+   print $fh $header;
+   print  $fh @navs;
+}
+
+if(/^\<\<\s*(\d)_([\w_]*)\s*\>\>\=/) { 
+   $str = "<< $1_$2 >>=\t$file\t/^<< $1_$2 >>=\$/;\"\t$1\tline:$.\n" ;
+   #$str = "<< $1_$2 >>=\t$file\t/^<< $1_$2 >>=\$/;\"\tc\tline:$.\n" ;
+   push @rest, $str;
+#   $chapts{$1} = ( $chapts{$1} ) ? [ @{$chapts{$1} }, $str ]  :  [ $str ];
+   push @navs,  "$1_$2\tsource.nw\t/^<< $1_$2 >>=\$/;\"\t$1\tline:$.\n" ;
+}elsif(/^\<\<Makefile\>\>\=/) { 
+   push @rest,  "<<Makefile>>=\t$file\t/^<<Makefile>>=\$/;\"\tf\tline:$.\n" ;
+   push @navs,  "Makefile\tsource.nw\t/^<<Makefile>>=\$/;\"\tf\tline:$.\n" ;
+}elsif(/^\<\<\s*([\w_]*)\s*\>\>\=/) { 
+   push @rest,  "<< $1 >>=\t$file\t/^<< $1 >>=\$/;\"\tc\tline:$.\n" ;
+   push @navs,  "$1\tsource.nw\t/^<< $1 >>=\$/;\"\tc\tline:$.\n" ;
+}elsif(/^\<\<([\w_]*)\.(\w*)\>\>\=/) { 
+   push @rest,  "<<$1.$2>>=\t$file\t/^<<$1.$2>>=\$/;\"\tf\tline:$.\n" ;
+   push @navs,  "$1\tsource.nw\t/^<<$1.$2>>=\$/;\"\tf\tline:$.\n" ;
+}elsif(/^(##*)\s*(\d)\. (.*)\s*$/) { 
+   $h = split "", $1; $points = "." x $h;
+   $str =  "$points $2. $3\t$file\t/^$1 $2. $3\$/;\"\t$2\tline:$.\n" ;
+   $chapts{$1} = ( $chapts{$1} ) ? [ @{$chapts{$1} }, $str ]  :  [ $str ];
+#   push @navs, "$2. $3\t$file\t/^$1 $2. $3\$/;\"\t$2\tline:$.\n" ;
+}elsif(/^(##*)\s*(.*)\s*$/) { 
+   $h = split "", $1; $points = "." x $h;
+   push @rest,   "$points $2\t$file\t/^$1 $2\$/;\"\ts\tline:$.\n" ;
+#   push @navs,   "$2\t$file\t/^$1 $2\$/;\"\ts\tline:$.\n" ;
+}  

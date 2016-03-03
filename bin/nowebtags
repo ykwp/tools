@@ -1,0 +1,10 @@
+#!/bin/sh
+
+
+file=$1
+
+[ -f $file ] || exit
+
+#Ast_forms       doc.nw  /^<< Ast_forms >>=$/;"  c       line:16 
+
+perl  -n -e 'BEGIN{ $file = $ARGV[0]; chomp $file; } if(/^\<\<\s*([\w_]*)\s*\>\>\=/){ chomp($1);  print "$1\t$file\t/^<< $1 >>=\$/;\"\ts\tline:$.\n" }' $file 

@@ -1,0 +1,4 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+2_blka	source.nw	/^<<2_blka.nw>>=$/;"	f	line:1
+1_fuck_me	source.nw	/^<< 1_fuck_me >>=$/;"	1	line:7

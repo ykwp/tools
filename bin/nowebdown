@@ -5,7 +5,7 @@
 file=$1
 target=$2
 
-[ -f "$file" ] || { echo "usage: <file> [targe] " ; exit 1 ; }
+[ -f "$file" ] || { echo "usage: <file> [target] " ; exit 1 ; }
 
 
 #clean
@@ -18,30 +18,35 @@ done
 lipsum expand -f plain  "*"  $file
 
 
+case $target in
+   release )
+      [ -f "Releases.txt" ] || { echo "Err: no Releases.txt file" ; exit 1; }
+      perl ~/aux/tools/bin/nw2pandoc.pl $file | pandoc > doc.html
 
-if [ "$target" = "release" ]; then
-   [ -f "Releases.txt" ] || { echo "Err: no Releases.txt file" ; exit 1; }
-   perl ~/dev/utils/nw2pandoc.pl $file | pandoc > doc.html
+      dir=$(basename $(pwd))
+      rm -rf $dir
+      mkdir -p $dir
+      cp  -p * $dir/
 
-   dir=$(basename $(pwd))
-   rm -rf $dir
-   mkdir -p $dir
-   cp  -p * $dir/
+      rel=$( head -1 Releases.txt | perl -ane 'print "@F[0]"')
+      reldir=${dir}_$rel
 
-   rel=$( head -1 Releases.txt | perl -ane 'print "@F[0]"')
-   reldir=${dir}_$rel
+      #reldir=${dir}_$(date +"%y-%m-%d")
 
-   #reldir=${dir}_$(date +"%y-%m-%d")
+      rm -rf $reldir
+      mv $dir $reldir
 
-   rm -rf $reldir
-   mv $dir $reldir
+      rm -f ${reldir}.tar.gz
+      tar cfvz  ${reldir}.tar.gz $reldir
+      rm -rf $reldir
+      ;;
+   doc )
+      perl ~/aux/tools/bin/nw2pandoc.pl $file | pandoc > doc.html
+      ;;
+   * )
+      for m in *.mk Makefile ; do
+         [ -f "$m" ] || continue
+         perl -p -i -e 's/^\s {2,}/\t/g' $m
+      done
+esac
 
-   rm -f ${reldir}.tar.gz
-   tar cfvz  ${reldir}.tar.gz $reldir
-   rm -rf $reldir
-else
-   perl -p -i -e 's/^\s {2,}/\t/g' Makefile
-
-   make run 
-
-fi
